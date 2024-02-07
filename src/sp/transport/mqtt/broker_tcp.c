@@ -403,6 +403,12 @@ tcptran_pipe_nego_cb(void *arg)
 					    					   p->tcp_cparam->max_packet_size));
 				}
 			}
+			// Need to free here because this is called only as callback in nni_taskq_thread
+			// It is assumed that callback should free everything
+			if (p->tcp_cparam) {
+				conn_param_free(p->tcp_cparam);
+				p->tcp_cparam = NULL;
+			}
 			nni_mtx_unlock(&ep->mtx);
 			return;
 		} else {
